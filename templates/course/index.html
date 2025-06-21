@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}
+E-Learning Platform
+{% endblock title %}
+
+{% block content %}
+
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+    <div class="container mx-auto text-center">
+        <h1 class="text-5xl font-extrabold mb-6">Discover and Learn New Skills</h1>
+        <p class="text-lg">Explore our wide range of courses and start your learning journey today.</p>
+        <a href="{% url 'courses:courses_list' %}"
+            class="mt-6 inline-block bg-white text-blue-600 font-bold py-2 px-6 rounded hover:bg-gray-100">Browse
+            Courses</a>
+    </div>
+</section>
+
+<!-- Categories and Courses Section -->
+<section class="py-12 px-30">
+    <div class="container mx-auto">
+        <h2 class="text-4xl font-bold mb-8 text-center">Our Subjects</h2>
+
+        <div class="space-y-12">
+            <!-- Category Card -->
+            <div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Course Card -->
+
+                    {% for subject in subjects %}
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
+                        <h3 class="text-xl font-bold mb-2">{{subject.title}}</h3>
+                        <p class="text-gray-600 mb-4">{{subject.description|default:" "}}</p>
+                        <ul class="my-3">
+                            {% for course in subject.courses.all %}
+
+                            <li><a href=" {% url 'courses:course_details' course.slug %}"
+                                    class="text-blue-500 hover:underline">{{course.title}}</a></li>
+                            {% empty %}
+                            <li>No courses</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <br>
+            <hr>
+            <h2 class="text-4xl font-bold mb-8 text-center">Our Courses</h2>
+
+            <!-- Another Category -->
+            <div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% for course in courses %}
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg">
+                        {% if course.photo %}
+                        <img src="{{course.photo.url}}" alt="Course Image" class="w-full h-auto rounded mb-4"
+                            style="width: 400px;  height: 200px;">
+                        {% else %}
+                        <img src="https://placehold.co/300x200" alt="Course Image" class="w-full h-auto rounded mb-4">
+                        {% endif %}
+                        <h3 class="text-xl font-bold mb-2">{{course.title}}</h3>
+                        <p class="text-gray-600 mb-4">{{course.subject}}</p>
+                        <a href="{% url 'courses:course_details' course.slug %}"
+                            class="text-blue-500 hover:underline">Start Learning</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- More categories can go here -->
+        </div>
+    </div>
+</section>
+
+
+{% endblock content %}

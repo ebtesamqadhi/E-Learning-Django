@@ -1,0 +1,22 @@
+<!-- Navbar -->
+
+<nav class="bg-white px-30 py-4 shadow-md">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="{% url 'courses:index' %}" class="text-2xl font-bold text-gray-800">E-Learn</a>
+
+    <ul class="flex space-x-4">
+      <li><a href="{% url 'account:view_profile' username=request.user.username %}"
+          class="text-gray-600 hover:text-blue-500">Welcome,
+          {{request.user}}</a></li>
+      <li><a href="{% url 'courses:index' %}" class="text-gray-600 hover:text-blue-500">Home</a></li>
+      <li><a href="{% url 'courses:courses_list' %}" class="text-gray-600 hover:text-blue-500">Courses</a></li>
+      <li>
+        <a href="{% url 'courses:subjects_list' %}" class="text-gray-600 hover:text-blue-500">Categories</a>
+      </li>
+      <li>
+        <a href="{% url 'account:signout' %}" class="text-gray-600 hover:text-blue-500">Sign-out</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+{% comment %} {% endif %} {% endcomment %}

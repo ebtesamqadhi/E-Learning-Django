@@ -1,0 +1,50 @@
+أكيد، عشان تسمح للطالب بحذف الكورس اللي سجّل فيه (يعني إلغاء التسجيل من الكورس)، تحتاج تضيف وظيفة جديدة في الـ views تتعامل مع إزالة المستخدم من مجموعة الطلاب في ذلك الكورس.
+
+### 1. أضف مسار URL جديد في `urls.py`:
+
+```python
+# urls.py
+path('unenroll-course/<slug:slug>/', views.unenroll_course, name='unenroll_course'),
+```
+
+### 2. أنشئ دالة في views.py للتعامل مع إلغاء التسجيل:
+
+```python
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from .models import Courses
+
+def unenroll_course(request, slug):
+    course = get_object_or_404(Courses, slug=slug)
+    if request.user.is_authenticated:
+        if request.user in course.students.all():
+            course.students.remove(request.user)
+            messages.success(request, 'تم إلغاء تسجيلك في الكورس بنجاح.')
+        else:
+            messages.info(request, 'أنت غير مسجل في هذا الكورس.')
+        return redirect('account:view_profile', username=request.user.username)
+    else:
+        messages.error(request, 'يجب تسجيل الدخول أولاً.')
+        return redirect('account:signin')
+```
+
+### 3. في صفحة تفاصيل الكورس (`course_details.html` مثلاً)، أضف زر إلغاء التسجيل:
+
+```html
+{% if user.is_authenticated and user in course_info.students.all %}
+  <a href="{% url 'courses:unenroll_course' course_info.slug %}"
+     class="inline-block bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600">
+    إلغاء التسجيل
+  </a>
+{% endif %}
+```
+
+---
+
+### ملاحظات:
+
+* تأكد أن المتغير `course_info` موجود في قالب تفاصيل الكورس.
+* بعد الإلغاء يتم إعادة توجيه المستخدم لصفحته الشخصية مع رسالة نجاح.
+* يمكن تعديل النصوص والألوان حسب ذوقك.
+
+هل تحتاجني أساعدك بكتابة كود لإضافة زر الإلغاء في صفحة الملف الشخصي أيضًا؟

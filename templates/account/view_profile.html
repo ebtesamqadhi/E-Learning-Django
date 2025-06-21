@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% load tailwind_filters %}
+
+
+
+{% block title %}
+{{profile.user.username}} - Profile
+{% endblock title %}
+
+
+
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto py-6 px-30 mb-8">
+
+    <!-- Profile Card -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="my-4">
+            <a href="{% url 'account:edit_profile' %}"
+                class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Edit-Profile
+            </a>
+        </div>
+        <div class="flex items-center flex-col md:flex-row md:items-start">
+            <!-- Profile Picture -->
+            <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-blue-500 mb-4 md:mb-0 md:mr-6">
+                {% if profile.photo %}
+                <img src="{{profile.photo.url}}" alt="Instructor Photo" class="w-full h-full object-cover">
+                {% else %}
+                <img src="https://placehold.co/300x200" alt="Instructor Photo" class="w-full h-full object-cover">
+                {% endif %}
+
+
+            </div>
+            <!-- Profile Details -->
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-bold text-gray-800">{{profile.user.username}}</h1>
+                {% if profile.header %}
+                <p class="text-blue-500 font-medium text-lg mt-2">{{profile.header}}</p>
+                {% endif %}
+                {% if profile.bio %}
+                <p class="text-gray-600 mt-4">{{profile.bio}}</p>
+                {% endif %}
+                <div class="mt-4">
+                    {% if perms.courses.add_courses %}
+                    <a href="{% url 'courses:add_coures' %}"
+                        class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                        ِAdd Course
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div class="mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Course Card -->
+            {% for course in courses %}
+            <div class="bg-white rounded-lg shadow-lg p-4">
+                {% if course.photo %}
+                <img src="{{course.photo.url}}" alt="Course Image" class="w-full h-auto rounded mb-4"
+                    style="width: 400px; height: 200px;">
+                {% else %}
+                <img src="https://placehold.co/300x200" alt="Course Image" class="w-full h-auto rounded mb-4">
+                {% endif %}
+                <h3 class="text-lg font-semibold text-gray-800">{{ course.title }}</h3>
+                <p class="text-gray-600 mt-2">{{ course.overview }}</p>
+                <a href="{% url 'courses:course_details' slug=course.slug %}"
+                    class="block mt-4 text-blue-500 font-medium hover:underline">View Course →</a>
+                <a href="{% url 'courses:edit_course' slug=course.slug %}"
+                    class="block mt-4 text-blue-500 font-medium hover:underline">Edit Course
+                    →</a>
+                <!-- زر الحذف -->
+                <button class="show-confirm-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-3">
+                    Delete
+                </button>
+                <!-- نموذج تأكيد الحذف مخفي -->
+                <form class="confirm-delete-form" method="post" action="{% url 'courses:delete_course' course.slug %}"
+                    style="display:none; margin-top: 15px;">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                    <p class="mb-3">Are you sure</p>
+
+                    <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded transition">
+                        Delete
+                    </button>
+                    <button type="button"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-5 rounded ml-3 transition cancel-btn">
+                        Cancel
+                    </button>
+
+                </form>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mt-8">
+        {% if user_role == 'student' %}
+        {% if user_courses %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Course Card -->
+            {% for user_cours in user_courses %}
+            <div class="bg-white rounded-lg shadow-lg p-4">
+                {% if user_cours.photo %}
+                <img src="{{user_cours.photo.url}}" alt="Course Image" class="w-full h-auto rounded mb-4"
+                    style="width: 400px;  height: 200px;">
+                {% else %}
+                <img src="https://placehold.co/300x200" alt="Course Image" class="w-full h-auto rounded mb-4">
+                {% endif %}
+                <h3 class="text-lg font-semibold text-gray-800">{{ user_cours.title }}</h3>
+                <p class="text-gray-600 mt-2">{{ user_cours.overview }}</p>
+                <a href="{% url 'courses:course_details' slug=user_cours.slug %}"
+                    class="block mt-4 text-blue-500 font-medium hover:underline">View Course →</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>لم تسجل في أي كورسات حتى الآن.</p>
+        {% endif %}
+        {% endif %}
+
+    </div>
+</div>
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // جمع كل أزرار عرض التأكيد
+        const showButtons = document.querySelectorAll('.show-confirm-btn');
+        const cancelButtons = document.querySelectorAll('.cancel-btn');
+
+        showButtons.forEach(function (btn, index) {
+            btn.addEventListener('click', function () {
+                btn.style.display = 'none';
+                document.querySelectorAll('.confirm-delete-form')[index].style.display = 'block';
+            });
+        });
+
+        cancelButtons.forEach(function (btn, index) {
+            btn.addEventListener('click', function () {
+                btn.closest('.confirm-delete-form').style.display = 'none';
+                showButtons[index].style.display = 'inline-block';
+            });
+        });
+    });
+
+</script>
+{% endblock %}
+
+
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load tailwind_filters %}
+
+{% block title %} {{course_info.title}}
+{% endblock title %} {% block content %}
+<!-- Course Details Section -->
+<section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+  <div class="container mx-auto text-center">
+    <h1 class="text-4xl font-extrabold mb-6">{{course_info.title}}</h1>
+    {% if user_role == 'student' %}
+    {% if user in course_info.students.all %}
+    <a href="{% url 'courses:unenroll_course' course_info.slug %}"
+      class="inline-block bg-white text-blue-600 font-bold py-2 px-6 rounded hover:bg-gray-100">
+      Unenroll
+    </a>
+    {% else %}
+    <a href="{% url 'courses:enroll_course' course_info.slug %}"
+      class="inline-block bg-white text-blue-600 font-bold py-2 px-6 rounded hover:bg-gray-100">Enroll
+      Now</a>
+    {% endif %}
+    {% endif %}
+  </div>
+
+
+
+
+</section>
+
+<!-- Module Section -->
+<div class="container mx-auto py-12 px-30">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Course Modules</h2>
+    <p class="text-gray-600">Explore the modules included in this course.</p>
+  </div>
+
+  <!-- Add Module Button -->
+  <div class="text-center mb-6">
+    {% if perms.courses.add_module and is_owner %}
+    <a href="{% url 'courses:add_module' course_info.slug %}"
+      class="bg-blue-600 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 transition">
+      + Add Module
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Modules List -->
+  {% for module in course_info.modules.all %}
+  <ul class="divide-y divide-gray-200 bg-gray-50 rounded-lg shadow-lg mb-4">
+    <li class="px-6 py-4 flex justify-between items-center hover:bg-gray-100 transition">
+      <div>
+        <h3 class="text-lg font-bold text-gray-800">{{module.title}}</h3>
+        <p class="text-sm text-gray-600">{{module.description}}</p>
+      </div>
+      {% if perms.courses.add_module and is_owner %}
+      <div>
+
+
+        <a href="{% url 'courses:edit_module' course_info.slug %}"
+          class="text-blue-600 hover:underline font-medium mx-3">
+          Edit
+        </a>
+        <!-- زر الحذف -->
+        <button class="show-confirm-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+          Delete
+        </button>
+      </div>
+      <!-- نموذج تأكيد الحذف مخفي -->
+      <form class="confirm-delete-form" method="post" action="{% url 'courses:delete_module' module.id %}"
+        style="display:none; margin-top: 15px;">
+        {% csrf_token %}
+        {{form|crispy}}
+        <p class="mb-3">Are you sure</p>
+
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded transition">
+          Delete
+        </button>
+        <button type="button"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-5 rounded ml-3 transition cancel-btn">
+          Cancel
+        </button>
+
+      </form>
+      {% endif %}
+    </li>
+  </ul>
+  {% empty %}
+  <div class="text-center text-gray-600">
+    <p>No modules have been added to this course yet.</p>
+  </div>
+
+  {% endfor %}
+
+
+</div>
+
+<!-- Additional Course Content -->
+<section class="py-6 px-30">
+  <div class="container mx-auto">
+    <!-- Course Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-3xl font-semibold mb-4">Course Overview</h2>
+        <p class="text-gray-700 mb-4">{{course_info.overview}}</p>
+      </div>
+      <div>
+        {% if course_info.photo %}
+        <img src="{{course_info.photo.url}}" alt="Course Image" class="w-full h-auto rounded mb-4"
+          style="width: 400px;  height: 200px;">
+        {% else %}
+        <img src="https://placehold.co/300x200" alt="Course Image" class="w-full h-auto rounded mb-4">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Instructor Section -->
+    <div class="mt-12 bg-gray-100 p-8 rounded-lg">
+      <h2 class="text-3xl font-semibold mb-4">
+        Instructor: {{course_info.owner}}
+      </h2>
+
+    </div>
+  </div>
+</section>
+
+{% endblock content %}
+{% block js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // جمع كل أزرار عرض التأكيد
+    const showButtons = document.querySelectorAll('.show-confirm-btn');
+    const cancelButtons = document.querySelectorAll('.cancel-btn');
+
+    showButtons.forEach(function (btn, index) {
+      btn.addEventListener('click', function () {
+        btn.style.display = 'none';
+        document.querySelectorAll('.confirm-delete-form')[index].style.display = 'block';
+      });
+    });
+
+    cancelButtons.forEach(function (btn, index) {
+      btn.addEventListener('click', function () {
+        btn.closest('.confirm-delete-form').style.display = 'none';
+        showButtons[index].style.display = 'inline-block';
+      });
+    });
+  });
+
+</script>
+{% endblock %}
