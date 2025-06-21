@@ -5,7 +5,7 @@
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ebtesamqadhi/E-Learning-Platform.git
+git clone https://github.com/ebtesamqadhi/E-Learning-Django.git
 cd E-Learning-Platform
 ```
 
