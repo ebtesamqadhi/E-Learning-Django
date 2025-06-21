@@ -7,20 +7,33 @@ git clone https://github.com/ebtesamqadhi/E-Learning-Platform.git
 cd E-Learning-Platform
 
 2. Create and activate a virtual environment:
+   
+```bash
 python -m venv venv
 venv\Scripts\activate       # On Windows
 or
 source venv/bin/activate    # On Linux/Mac
+```
 
-3. Install the required packages:
+4. Install the required packages:
+
+```bash
 pip install -r requirements.txt
+````
+5. Apply database migrations:
 
-4. Apply database migrations:
+````bash
 python manage.py migrate
+````
 
-5. Create a superuser to access the admin panel (Optional):
+6. Create a superuser to access the admin panel (Optional):
+
+````bash
 python manage.py createsuperuser
+````
 
-6. Run the development server
+7. Run the development server
+
+````bash
 python manage.py runserver
-
+````
