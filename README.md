@@ -9,7 +9,7 @@ cd E-Learning-Platform
 2. Create and activate a virtual environment:
 python -m venv venv
 venv\Scripts\activate       # On Windows
-# or
+or
 source venv/bin/activate    # On Linux/Mac
 
 3. Install the required packages:
