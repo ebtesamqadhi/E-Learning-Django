@@ -7,39 +7,6 @@ from .models import UserProfile
 from  courses.models import Courses
 from django.contrib.auth import update_session_auth_hash
 
-
-# def sign_up(request):
-#     form = SignupForm()
-#     if request.method == 'POST':
-#         form = SignupForm(request.POST)
-
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')  # احصل على اسم المستخدم
-
-#             if User.objects.filter(username=username).exists():
-#                 return render(request, 'account/signup.html', {
-#             'error': 'اسم المستخدم مستخدم بالفعل. الرجاء اختيار اسم آخر.'
-#             })
-#             user = form.save() 
-#             InstructorProfile.objects.create(user=user )
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password1')
-
-#             user = authenticate(request, username = username, password = password)
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('account:view_profile',username=request.user.username)
-            
-        
-#     context={
-#         'form':form,
-#              }
-
-#     return render(request, 'account/signup.html', context)
-
-
-
-
 def sign_up(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -47,9 +14,6 @@ def sign_up(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             if User.objects.filter(username=username).exists():
-                # return render(request, 'account/signup.html', {
-                #     'error': 'اسم المستخدم مستخدم بالفعل. الرجاء اختيار اسم آخر.'
-                # })
                 form.add_error('username', 'اسم المستخدم مستخدم بالفعل. الرجاء اختيار اسم آخر.')
             else:
                 user = form.save(commit=False)  
@@ -83,7 +47,6 @@ def sign_up(request):
 
 def sign_in(request):
     ERROR = None
-    # لو هو قده عامل تسجيل دخول وعمل الرابط حق تسجيل الدخول بيوديه على طول للصفحة الرئيسية
     if request.user.is_authenticated:
         return redirect('courses:index')
     
